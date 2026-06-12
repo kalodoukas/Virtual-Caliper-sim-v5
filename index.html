@@ -2,476 +2,122 @@
 <html lang="el">
 <head>
   <meta charset="UTF-8">
-  <title>Παχύμετρο 0–157 mm (mm & inch)</title>
-
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protected Application</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      font-family: Arial, Helvetica, sans-serif;
       margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+      background: #f7f7f7;
+      color: #222;
     }
-
-    h1 {
-      font-size: 22px;
-      margin: 0 0 5px 0;
+    .status {
+      max-width: 760px;
+      margin: 60px auto;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 26px 30px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      line-height: 1.55;
     }
-
-    .info {
-      font-size: 14px;
-      max-width: 1000px;
-      text-align: center;
-      margin-bottom: 10px;
+    .error {
+      color: #b00020;
     }
-
-    .caliper-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: calc(100vw - 24px);
-      user-select: none;
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    #caliperStage {
-      position: relative;
-      transform-origin: top left;
-    }
-
-    #fixedImg {
-      display: block;
-      width: auto;
-      height: auto;
-      max-width: none;
-    }
-
-    #sliderGroup {
-      position: absolute;
-      top: 100px;          /* ΡΥΘΜΙΖΕΤΑΙ: γενική κατακόρυφη θέση βερνιέρου */
-      left: 0px;
-      cursor: grab;
-      pointer-events: auto;
-    }
-
-    #sliderMm {
-      position: absolute;
-      top: 175px;          /* ΡΥΘΜΙΖΕΤΑΙ: στοίχιση mm */
-      left: 1px;
-    }
-
-    #sliderIn {
-      position: absolute;
-      top: 30px;           /* ΡΥΘΜΙΖΕΤΑΙ: στοίχιση inch */
-      left: 1px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .controls button {
-      padding: 6px 10px;
+    code {
+      background: #f1f1f1;
+      padding: 2px 5px;
       border-radius: 4px;
-      border: 1px solid #999;
-      background: #eaeaea;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .controls button:hover {
-      background: #dcdcdc;
-    }
-
-    #toggleDigital {
-      padding: 6px 12px;
-      border-radius: 5px;
-      border: none;
-      background: #0066cc;
-      color: white;
-      cursor: pointer;
-      margin-top: 4px;
-      margin-bottom: 4px;
-    }
-
-    #toggleDigital.off {
-      background: #444;
-    }
-
-    .reading-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 10px 15px;
-      background: #ffffff;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-      max-width: 1000px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .reading-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 16px;
-    }
-
-    .reading-row span.label {
-      font-weight: bold;
     }
   </style>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f4f4f4">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Caliper">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
-
 <body>
-
-<h1>Εικονικό Παχύμετρο 0–157 mm (mm & inch)</h1>
-
-<div class="info">
-  Σύρε το <b>κινητό μέρος</b> (mm + inch) ή χρησιμοποίησε τα κουμπιά κίνησης.<br>
-  Η ένδειξη σε mm είναι καλιμπραρισμένη· εμφανίζεται και σε ίντσες (δεκαδικές και κλασματικές 1/128").
-</div>
-
-<div class="caliper-wrapper" id="caliperWrapper">
-  <img id="fixedImg" src="fixed.png">
-
-  <div id="sliderGroup">
-    <img id="sliderMm" src="slider_mm.png">
-    <img id="sliderIn" src="slider_in.png">
+  <div class="status" id="status">
+    <h2>Application integrity check</h2>
+    <p>Checking file integrity before execution...</p>
   </div>
-</div>
 
-<div class="controls">
-  <button id="fastLower">Fast Lower (-1 mm)</button>
-  <button id="lower">Lower (-0.05 mm)</button>
-  <button id="higher">Higher (+0.05 mm)</button>
-  <button id="fastHigher">Fast Higher (+1 mm)</button>
-</div>
+  <script>
+  (async function () {
+    "use strict";
 
-<button id="toggleDigital">Digital Display: ON</button>
+    const EXPECTED_SHA256 = "aa8cfa05d1535236031118dabd83b8a5245f8510b4b5beee6adefa329d48cbc6";
+    const APP_FILE = "app.js";
+    const AUTHOR = "N. Kalodoukas";
+    const APP_ID = "NK-HTML-LOCKED-BUILD";
+    const ORIGINAL_FILE = "index.html";
 
-<div class="reading-panel">
-  <div class="reading-row">
-    <span class="label">Κύρια κλίμακα:</span>
-    <span id="mainScaleValue">0 mm</span>
-  </div>
-  <div class="reading-row">
-    <span class="label">Βερνιέρος:</span>
-    <span id="vernierValue">0.00 mm</span>
-  </div>
-  <div class="reading-row">
-    <span class="label">Συνολικό:</span>
-    <span id="totalValue">0.00 mm</span>
-  </div>
-  <div class="reading-row">
-    <span class="label">Inches (decimal):</span>
-    <span id="inchDecValue">0.0000 in</span>
-  </div>
-  <div class="reading-row">
-    <span class="label">Inches (fraction):</span>
-    <span id="inchFracValue">0 in</span>
-  </div>
-</div>
+    function showError(title, message) {
+      document.body.innerHTML = `
+        <div class="status error">
+          <h2>${title}</h2>
+          <p>${message}</p>
+          <p><strong>The application has been stopped for protection reasons.</strong></p>
+        </div>
+      `;
+    }
 
-<script>
-  const wrapper      = document.getElementById('caliperWrapper');
-  const sliderGroup  = document.getElementById('sliderGroup');
+    async function sha256Hex(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
 
-  const mainScaleEl  = document.getElementById('mainScaleValue');
-  const vernierEl    = document.getElementById('vernierValue');
-  const totalEl      = document.getElementById('totalValue');
-  const inchDecEl    = document.getElementById('inchDecValue');
-  const inchFracEl   = document.getElementById('inchFracValue');
-
-  let isDragging = false;
-  let dragOffsetX = 0;
-  let sliderX = 0;
-
-  // ---- ΚΑΛΙΜΠΡΑΡΙΣΜΑ ----
-  const pxPerMm = 7.88;       // κλίμακα fixed.png σε px/mm
-  const minX    = 109.6;      // θέση 0 mm πάνω στη fixed.png
-  const maxMm   = 157;        // μέγιστη διαδρομή σε mm
-  const maxX    = minX + maxMm * pxPerMm;
-
-  let currentScale = 1;
-  let stage = null;
-  // ------------------------
-
-  function setupResponsiveStage() {
-    const fixedImg = document.getElementById("fixedImg");
-
-    if (!stage) {
-      stage = document.createElement("div");
-      stage.id = "caliperStage";
-
-      while (wrapper.firstChild) {
-        stage.appendChild(wrapper.firstChild);
+    try {
+      if (!window.crypto || !window.crypto.subtle) {
+        showError(
+          "Integrity check unavailable",
+          "This browser does not support Web Crypto API, or the file is running in an unsupported environment."
+        );
+        return;
       }
-      wrapper.appendChild(stage);
+
+      const response = await fetch(APP_FILE, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" }
+      });
+
+      if (!response.ok) {
+        showError(
+          "Application file loading failed",
+          "The file <code>app.js</code> could not be loaded."
+        );
+        return;
+      }
+
+      const appCode = await response.text();
+      const actualHash = await sha256Hex(appCode);
+
+      if (actualHash !== EXPECTED_SHA256) {
+        showError(
+          "Integrity check failed",
+          "The file <code>app.js</code> has been modified or corrupted. The application will not run."
+        );
+        console.error("Checksum failed", {
+          expected: EXPECTED_SHA256,
+          actual: actualHash,
+          author: AUTHOR,
+          appId: APP_ID,
+          originalFile: ORIGINAL_FILE
+        });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.textContent = appCode;
+      document.body.appendChild(script);
+
+    } catch (error) {
+      console.error(error);
+      showError(
+        "Integrity check error",
+        "An error occurred during integrity verification or application execution."
+      );
     }
-
-    const naturalW = fixedImg.naturalWidth || fixedImg.width;
-    const naturalH = fixedImg.naturalHeight || fixedImg.height;
-
-    if (!naturalW || !naturalH) return;
-
-    const availableW = Math.min(window.innerWidth - 24, 1400);
-    currentScale = Math.min(1, availableW / naturalW);
-
-    stage.style.width = naturalW + "px";
-    stage.style.height = naturalH + "px";
-    stage.style.transform = "scale(" + currentScale + ")";
-
-    wrapper.style.width = (naturalW * currentScale) + "px";
-    wrapper.style.height = (naturalH * currentScale) + "px";
-  }
-
-  function getLocalX(clientX) {
-    const rect = wrapper.getBoundingClientRect();
-    return (clientX - rect.left) / currentScale;
-  }
-
-  function computeReading() {
-    let mmTotal = (sliderX - minX) / pxPerMm;
-
-    if (mmTotal < 0) mmTotal = 0;
-    if (mmTotal > maxMm) mmTotal = maxMm;
-
-    // Βήμα 0,05 mm (τυπικός βερνιέρος)
-    mmTotal = Math.round(mmTotal / 0.05) * 0.05;
-
-    const mainMm = Math.floor(mmTotal);
-    const frac   = mmTotal - mainMm;
-
-    return { mmTotal, mainMm, frac };
-  }
-
-  // gcd για απλοποίηση κλάσματος
-  function gcd(a, b) {
-    a = Math.abs(a);
-    b = Math.abs(b);
-    while (b !== 0) {
-      const t = b;
-      b = a % b;
-      a = t;
-    }
-    return a || 1;
-  }
-
-  // Μορφοποίηση ίντσας σε αγγλοσαξονικό κλάσμα 1/128"
-  function formatInchesFraction(inches) {
-    const sign = inches < 0 ? -1 : 1;
-    let x = Math.abs(inches);
-
-    let whole = Math.floor(x);
-    let frac = x - whole;
-
-    const denom = 128; // βήμα 1/128"
-    let num = Math.round(frac * denom);
-
-    if (num === 0) {
-      if (whole === 0) return "0 in";
-      return (sign < 0 ? "-" : "") + whole + " in";
-    }
-
-    if (num === denom) {
-      whole += 1;
-      num = 0;
-      if (whole === 0) return "0 in";
-      return (sign < 0 ? "-" : "") + whole + " in";
-    }
-
-    const g = gcd(num, denom);
-    num /= g;
-    const d = denom / g;
-
-    let text = "";
-    if (whole > 0) {
-      text += whole + " ";
-    }
-    text += num + "/" + d;
-
-    return (sign < 0 ? "-" : "") + text + " in";
-  }
-
-  function updateReading() {
-    const { mmTotal, mainMm, frac } = computeReading();
-
-    mainScaleEl.textContent = mainMm + ' mm';
-    vernierEl.textContent   = frac.toFixed(2) + ' mm';
-    totalEl.textContent     = mmTotal.toFixed(2) + ' mm';
-
-    // mm -> in, στρογγυλοποίηση σε 1/128"
-    const inchesRaw = mmTotal / 25.4;
-    const inches    = Math.round(inchesRaw * 128) / 128;
-
-    inchDecEl.textContent  = inches.toFixed(4) + ' in';
-    inchFracEl.textContent = formatInchesFraction(inches);
-  }
-
-  function placeSliderInitial() {
-    sliderX = minX;
-    sliderGroup.style.left = sliderX + "px";
-    updateReading();
-  }
-
-  function mouseDown(e) {
-    isDragging = true;
-    sliderGroup.style.cursor = "grabbing";
-    const mouseX = getLocalX(e.clientX);
-    dragOffsetX = mouseX - sliderX;
-  }
-
-  function mouseMove(e) {
-    if (!isDragging) return;
-    const mouseX = getLocalX(e.clientX);
-    let newX = mouseX - dragOffsetX;
-
-    if (newX < minX) newX = minX;
-    if (newX > maxX) newX = maxX;
-
-    sliderX = newX;
-    sliderGroup.style.left = sliderX + "px";
-    updateReading();
-  }
-
-  function mouseUp() {
-    isDragging = false;
-    sliderGroup.style.cursor = "grab";
-  }
-
-  sliderGroup.addEventListener("mousedown", mouseDown);
-  document.addEventListener("mousemove", mouseMove);
-  document.addEventListener("mouseup", mouseUp);
-
-  // --- Κουμπιά κίνησης σε mm ---
-  function mmToPx(mm) {
-    return mm * pxPerMm;
-  }
-
-  function moveSliderMM(deltaMm) {
-    let newX = sliderX + mmToPx(deltaMm);
-
-    if (newX < minX) newX = minX;
-    if (newX > maxX) newX = maxX;
-
-    sliderX = newX;
-    sliderGroup.style.left = sliderX + "px";
-    updateReading();
-  }
-
-  document.getElementById("fastLower").addEventListener("click", () => {
-    moveSliderMM(-1);        // -1 mm
-  });
-
-  document.getElementById("lower").addEventListener("click", () => {
-    moveSliderMM(-0.05);     // -0,05 mm
-  });
-
-  document.getElementById("higher").addEventListener("click", () => {
-    moveSliderMM(0.05);      // +0,05 mm
-  });
-
-  document.getElementById("fastHigher").addEventListener("click", () => {
-    moveSliderMM(1);         // +1 mm
-  });
-
-
-  // --- Touch support for iPhone / mobile ---
-  function touchDown(e) {
-    if (!e.touches || !e.touches[0]) return;
-    e.preventDefault();
-    isDragging = true;
-    sliderGroup.style.cursor = "grabbing";
-    const touchX = getLocalX(e.touches[0].clientX);
-    dragOffsetX = touchX - sliderX;
-  }
-
-  function touchMove(e) {
-    if (!isDragging || !e.touches || !e.touches[0]) return;
-    e.preventDefault();
-
-    const touchX = getLocalX(e.touches[0].clientX);
-    let newX = touchX - dragOffsetX;
-
-    if (newX < minX) newX = minX;
-    if (newX > maxX) newX = maxX;
-
-    sliderX = newX;
-    sliderGroup.style.left = sliderX + "px";
-    updateReading();
-  }
-
-  function touchUp() {
-    isDragging = false;
-    sliderGroup.style.cursor = "grab";
-  }
-
-  sliderGroup.addEventListener("touchstart", touchDown, { passive: false });
-  document.addEventListener("touchmove", touchMove, { passive: false });
-  document.addEventListener("touchend", touchUp, { passive: true });
-  document.addEventListener("touchcancel", touchUp, { passive: true });
-
-  // --- Digital ON/OFF ---
-  const readingPanel     = document.querySelector(".reading-panel");
-  const toggleDigitalBtn = document.getElementById("toggleDigital");
-
-  toggleDigitalBtn.addEventListener("click", () => {
-    const visible = readingPanel.style.display !== "none";
-
-    if (visible) {
-      readingPanel.style.display = "none";
-      toggleDigitalBtn.textContent = "Digital Display: OFF";
-      toggleDigitalBtn.classList.add("off");
-    } else {
-      readingPanel.style.display = "flex";
-      toggleDigitalBtn.textContent = "Digital Display: ON";
-      toggleDigitalBtn.classList.remove("off");
-    }
-  });
-
-
-  function initCaliper() {
-    setupResponsiveStage();
-    placeSliderInitial();
-  }
-
-  window.addEventListener("load", initCaliper);
-
-  window.addEventListener("resize", () => {
-    setupResponsiveStage();
-    sliderGroup.style.left = sliderX + "px";
-  });
-
-</script>
-
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./service-worker.js');
-  });
-}
-</script>
+  })();
+  </script>
 </body>
 </html>
