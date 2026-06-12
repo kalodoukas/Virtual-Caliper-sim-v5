@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Protected Application</title>
+  <title>Protected Caliper Application</title>
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -42,11 +42,8 @@
   (async function () {
     "use strict";
 
-    const EXPECTED_SHA256 = "3a219abfe9dc24d8953d69bfd73fd2e951c8e7942e1e12ecc7cdb3307e2f4378";
+    const EXPECTED_SHA256 = "7455a4cf12029c550af6b5049aace5bad1e4d6763d7206ceb0dba8ccd15d72e5";
     const APP_FILE = "app.js";
-    const AUTHOR = "N. Kalodoukas";
-    const APP_ID = "NK-HTML-LOCKED-BUILD";
-    const ORIGINAL_FILE = "index.html";
 
     function showError(title, message) {
       document.body.innerHTML = `
@@ -98,10 +95,7 @@
         );
         console.error("Checksum failed", {
           expected: EXPECTED_SHA256,
-          actual: actualHash,
-          author: AUTHOR,
-          appId: APP_ID,
-          originalFile: ORIGINAL_FILE
+          actual: actualHash
         });
         return;
       }
